@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Checkout</h2>
+
+  {% if items %}
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-dark">
+        <tr>
+          <th scope="col">Item</th>
+          <th scope="col">Price (KES)</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Subtotal (KES)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in items %}
+        <tr>
+          <td>
+            <strong>{{ item.fooditem.name }}</strong><br>
+            <small class="text-muted">Expires: {{ item.fooditem.expiry_date }}</small>
+          </td>
+          <td>{{ item.fooditem.discounted_price }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.subtotal }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <h4>Total: <span class="text-success">KES {{ total }}</span></h4>
+    <form method="post" action="{% url 'checkout' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-success btn-lg">Confirm Order</button>
+    </form>
+  </div>
+
+  {% else %}
+  <div class="alert alert-info text-center">
+    Your cart is empty. Add items before checking out!
+  </div>
+  {% endif %}
+</div>
+
+
+
+</body>
+</html>
