@@ -1,10 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from . models import FoodItem, Activity, Order, Order_item
 from django.contrib import messages
-# from django.utils import timezone
+from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from authentication.models import UserProfile
-from django.db.models import Sum, F, ExpressionWrapper, DecimalField
+from datetime import timedelta
 
 
 # Create your views here.
@@ -59,8 +58,15 @@ def donor_dashboard(request):
     )
 
 def consumer_dashboard(request):
-    fooditems = FoodItem.objects.all().order_by('-id')
-    total_fooditems = FoodItem.objects.count()
+    items = FoodItem.objects.filter(created_by__userprofile__role='donor')
+    today = timezone.now().date()
+
+    available_items = items.filter(expiry_date__gte=today)
+
+    soon_threshold = today + timedelta(days=3)
+    expring_soon = items.filter(expiry_date__gte=today, expiry_date__lte=soon_threshold)
+    fooditems = available_items.order_by('-id')
+    total_fooditems = available_items.count()
     total_orders = Order.objects.count()
     orders = Order.objects.filter(user=request.user)
     total_savings = 0
@@ -70,7 +76,7 @@ def consumer_dashboard(request):
             savings = (item.fooditem.original_price - item.fooditem.discounted_price) * item.quantity
             total_savings += savings
 
-    return render(request, 'main/consumer_dashboard.html', {"fooditems":fooditems, 'total_fooditems':total_fooditems, "total_orders":total_orders, 'total_savings':total_savings})
+    return render(request, 'main/consumer_dashboard.html', {"fooditems":fooditems, 'total_fooditems':total_fooditems, "total_orders":total_orders, 'total_savings':total_savings, "available_items":available_items, "expring_soon":expring_soon})
 
 def add_order_item(request, fooditem_id):
     fooditem = get_object_or_404(FoodItem, id=fooditem_id)
@@ -116,7 +122,50 @@ def order(request, ):
     return redirect('my_orders')
 
 def my_orders(request):
-    return render(request, 'main/orders.html')
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'main/orders.html', {"orders":orders})
+
+@login_required
+def cancel_order(request, order_id):
+    # Get the order belonging to the logged-in user
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    # Restore stock for each item in the order
+    for order_item in order.items.all():
+        fooditem = order_item.fooditem
+        fooditem.stock += order_item.quantity
+        fooditem.save()
+    # Option 1: Delete the order completely
+    order.delete()
+    messages.success(request, "Order cancelled and stock restored.")
+
+    order.status = "cancelled"
+    order.save()
+    messages.success(request, "Order marked as cancelled and stock restored.")
+
+    return redirect('my_orders')
+
+@login_required
+def my_order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    items = []
+
+    total_price = 0
+    for item in order.items.all():
+        subtotal = item.quantity * item.fooditem.discounted_price
+        total_price += subtotal
+        items.append({
+            'fooditem': item.fooditem,
+            'quantity': item.quantity,
+            'price': item.fooditem.discounted_price,
+            'subtotal': subtotal
+        })
+
+    context = {
+        'order': order,
+        'items': items,
+        'total_price': total_price,
+    }
+    return render(request, 'main/my_order_detail.html', context)
 
 def view_cartitem(request):
     return render(request, 'main/viewitem.html')
@@ -241,3 +290,21 @@ def order_detail(request, order_id):
         'total_price': total_price,
     }
     return render(request, 'main/order_detail.html', context)
+
+def expiring_soon_page(request, pk=None):
+    today = timezone.now().date()
+    soon_threshold = today + timedelta(days=3)
+
+    # Get all expiring soon items
+    expiring_soon = FoodItem.objects.filter(
+        expiry_date__gte=today,
+        expiry_date__lte=soon_threshold
+    ).order_by('expiry_date')
+    selected_item = None
+    if pk:
+        selected_item = get_object_or_404(FoodItem, pk=pk)
+
+    return render(request, "main/expiry_alerts.html", {
+        "expiring_soon": expiring_soon,
+        "selected_item": selected_item,
+    })
