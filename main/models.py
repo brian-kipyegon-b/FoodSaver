@@ -46,3 +46,24 @@ class Activity(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.action}"
     
+class Notification(models.Model):
+    TYPE_CHOICES = [
+        ("order", "Order"),
+        ("delivery", "Delivery"),
+        ("payment", "Payment"),
+        ("general", "General"),
+    ]
+    ROLE_CHOICES = [
+        ("consumer", "Consumer"),
+        ("donor", "Donor"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    role = models.CharField(max_length=15, choices=ROLE_CHOICES)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.role} - {self.user.username} - {self.message[:30]}"

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from . models import FoodItem, Activity, Order, Order_item
+from . models import FoodItem, Activity, Order, Order_item, Notification
 from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -31,8 +31,7 @@ def add_food(request):
     
     return render(request, 'main/add_food.html')
 
-
-
+@login_required
 def donor_dashboard(request):
     fooditems = FoodItem.objects.all().order_by('-id')
 
@@ -42,13 +41,14 @@ def donor_dashboard(request):
     activitys = Activity.objects.all()[:3]
     
     food_saved = FoodItem.objects.all().count()
-
+    unread_count = request.user.notifications.filter(is_read=False, role="donor").count()
     context = {
         "fooditems": fooditems,
         "total_fooditems": total_fooditems,
         "total_orders": total_orders,
         'food_saved': food_saved,
         'activitys':activitys,
+        'unread_count':unread_count,
     }
 
     return render(
@@ -57,6 +57,7 @@ def donor_dashboard(request):
         context
     )
 
+@login_required
 def consumer_dashboard(request):
     items = FoodItem.objects.filter(created_by__userprofile__role='donor')
     today = timezone.now().date()
@@ -75,9 +76,10 @@ def consumer_dashboard(request):
         for item in order.items.all():
             savings = (item.fooditem.original_price - item.fooditem.discounted_price) * item.quantity
             total_savings += savings
+    unread_count = request.user.notifications.filter(is_read=False).count()
+    return render(request, 'main/consumer_dashboard.html', {"fooditems":fooditems, 'total_fooditems':total_fooditems, "total_orders":total_orders, 'total_savings':total_savings, "available_items":available_items, "expring_soon":expring_soon, "unread_count":unread_count})
 
-    return render(request, 'main/consumer_dashboard.html', {"fooditems":fooditems, 'total_fooditems':total_fooditems, "total_orders":total_orders, 'total_savings':total_savings, "available_items":available_items, "expring_soon":expring_soon})
-
+@login_required
 def add_order_item(request, fooditem_id):
     fooditem = get_object_or_404(FoodItem, id=fooditem_id)
 
@@ -102,6 +104,7 @@ def add_order_item(request, fooditem_id):
     
     return render(request, 'main/add_order_item.html')
 
+@login_required
 def order(request, ):
     fooditem = get_object_or_404(FoodItem, id=fooditem.id)
 
@@ -121,6 +124,7 @@ def order(request, ):
         messages.success(request, "Your order was placed successfully.")
     return redirect('my_orders')
 
+@login_required
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'main/orders.html', {"orders":orders})
@@ -167,12 +171,15 @@ def my_order_detail(request, order_id):
     }
     return render(request, 'main/my_order_detail.html', context)
 
+@login_required
 def view_cartitem(request):
     return render(request, 'main/viewitem.html')
 
+@login_required
 def view_item(request):
     return render(request, 'main/viewitem.html')
 
+@login_required
 def add_to_cart(request, fooditem_id):
     # Get the cart from session (or create a new one)
     cart = request.session.get('cart', {})
@@ -187,6 +194,7 @@ def add_to_cart(request, fooditem_id):
     # Redirect to cart page
     return redirect('cart_view')
 
+@login_required
 def cart_view(request):
     cart = request.session.get('cart', {})
     items = []
@@ -208,6 +216,7 @@ def cart_view(request):
     }
     return render(request, 'main/cart.html', context)
 
+@login_required
 def decrease_quantity(request, fooditem_id):
     cart = request.session.get('cart', {})
     item_id = str(fooditem_id)
@@ -221,6 +230,7 @@ def decrease_quantity(request, fooditem_id):
     request.session['cart'] = cart
     return redirect('cart_view')
 
+@login_required
 def increase_quantity(request, fooditem_id):
     cart = request.session.get('cart', {})
     item_id = str(fooditem_id)
@@ -236,6 +246,7 @@ def increase_quantity(request, fooditem_id):
     request.session['cart'] = cart
     return redirect('cart_view')
 
+@login_required
 def remove_from_cart(request, fooditem_id):
     cart = request.session.get('cart', {})
     item_id = str(fooditem_id)
@@ -246,6 +257,7 @@ def remove_from_cart(request, fooditem_id):
     request.session['cart'] = cart
     return redirect('cart_view')
 
+@login_required
 def place_order(request):
     cart = request.session.get('cart', {})
     if not cart:
@@ -255,20 +267,24 @@ def place_order(request):
     order = Order.objects.create(user=request.user)
     for item_id, qty in cart.items():
         fooditem = get_object_or_404(FoodItem, id=item_id)
-        # ✅ Check stock before reducing
-        # if qty > fooditem.stock:
-        #     messages.error(request, f"Not enough stock for {fooditem.name}. Available: {fooditem.quantity}")
-        #     return redirect('cart_view')
-        # # Reduce stock
+        # Check stock before reducing
+        if qty > fooditem.stock:
+            messages.error(request,f"Not enough stock for {fooditem.name}. Available: {fooditem.stock}")
+            return redirect('cart_view')
+        # Reduce stock safely
         fooditem.stock -= qty
         fooditem.save()
         # Create order item
         Order_item.objects.create(order=order, fooditem=fooditem, quantity=qty)
     # Clear cart after successful checkout
     request.session['cart'] = {}
+    # Create notifications
+    Notification.objects.create(user=fooditem.created_by, role="donor", type="order", message=f"{request.user.username} ordered {qty} of {fooditem.name}. Remaining stock: {fooditem.stock}", is_read=False)
+    Notification.objects.create(user=request.user, role="consumer", type="order", message=f"Order #{order.id} has been placed successfully!")
     messages.success(request, f"Order #{order.id} placed successfully!")
     return redirect('order_detail', order_id=order.id)
 
+@login_required
 def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     items = []
@@ -291,6 +307,7 @@ def order_detail(request, order_id):
     }
     return render(request, 'main/order_detail.html', context)
 
+@login_required
 def expiring_soon_page(request, pk=None):
     today = timezone.now().date()
     soon_threshold = today + timedelta(days=3)
@@ -308,3 +325,17 @@ def expiring_soon_page(request, pk=None):
         "expiring_soon": expiring_soon,
         "selected_item": selected_item,
     })
+
+@login_required
+def consumer_notifications(request):
+    notes = request.user.notifications.filter(role="consumer").order_by('-created_at')
+    unread_count = request.user.notifications.filter(is_read=False).count()
+    request.user.notifications.filter(is_read=False).update(is_read=True)
+    return render(request, 'main/consumer_notifications', {"notes":notes, "unread_count":unread_count})
+
+@login_required
+def donor_notifications(request):
+    notes = request.user.notifications.filter(role="donor").order_by('-created_at')
+    unread_count = request.user.notifications.filter(is_read=False).count()
+    request.user.notifications.filter(is_read=False).update(is_read=True)
+    return render(request, 'main/donor_notifications.html', {"notes":notes, "unread_count":unread_count})

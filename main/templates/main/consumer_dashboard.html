@@ -5,7 +5,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donor Dashboard</title>
+    <title>Consumer Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
@@ -103,10 +103,17 @@
                             </div>
                         </li>
                         <li class="nav-item mb-3">
-                            <div class="d-flex gap-1 align-items-center">
-                                <div><img src="{% static 'svgs\notifications.svg' %}" width="24px" alt=""></div>
-                                <div>Notifications</div>
-                            </div>
+                            <a href="{% url 'consumer_notifications' %}"
+                                class="d-flex gap-1 align-items-center text-decoration-none">
+                                <div><img src="{% static 'svgs/notifications.svg' %}" width="24px" alt=""></div>
+                                <div>Notifications
+                                    {% if unread_count %}
+                                    <span class="badge bg-danger">
+                                        {{ unread_count }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </a>
                         </li>
                         <li class="nav-item mb-3">
                             <div class="d-flex gap-1 align-items-center">
@@ -121,10 +128,10 @@
                             </div>
                         </li>
                         <li class="nav-item mb-3 pt-3">
-                            <div class="d-flex gap-1 align-items-center">
+                            <a href="{% url 'logout' %}" class="d-flex gap-1 align-items-center text-decoration-none">
                                 <div><img src="{% static 'svgs\logout.svg' %}" width="24px" alt=""></div>
                                 <div>Logout</div>
-                            </div>
+                            </a>
                         </li>
                     </ul>
 
@@ -197,16 +204,15 @@
                         </a>
                     </div>
 
-                    <div class="d-flex gap-2">
-                        <div class="card col-md-8">
-                            <div style="background: rgba(15, 23, 42, 0.03);" class="m-0">
-                                <h4 class="mb-4 ps-3 mt-2">
-                                    Active FoodItems
-                                </h4>
-                            </div>
-                            {% if available_items %}
-                            <div class="row p-4">
-                                <div class="row" id="foodItems">
+                    <div class="row g-2">
+                        <!-- Active FoodItems -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div style="background: rgba(15, 23, 42, 0.03);" class="m-0">
+                                    <h4 class="mb-4 ps-3 mt-2">Active FoodItems</h4>
+                                </div>
+                                {% if available_items %}
+                                <div class="row p-4" id="foodItems">
                                     {% for item in available_items %}
                                     <div class="col-md-4 mb-4 food-card {% if forloop.counter > 6 %}d-none{% endif %}">
                                         <div class="card shadow-sm">
@@ -216,7 +222,9 @@
                                                 <p class="card-text text-muted">Expires: {{ item.expiry_date }}</p>
                                                 <p class="fw-bold text-success">KES {{ item.discounted_price }}</p>
                                                 <a href="{% url 'add_to_cart' item.id %}"
-                                                    class="btn btn-outline-success w-100">Add to Cart</a>
+                                                    class="btn btn-outline-success w-100">
+                                                    Add to Cart
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
@@ -226,15 +234,17 @@
                                 <div class="text-center mt-3">
                                     <button id="viewMoreBtn" class="btn btn-success">View More</button>
                                 </div>
-
                                 {% else %}
-                                <div class="text-center py-5 rounded-3">Donors have not added any food items yet. Please
-                                    check back later</div>
+                                <div class="text-center py-5 rounded-3">
+                                    Donors have not added any food items yet. Please check back later
+                                </div>
                                 {% endif %}
                             </div>
                         </div>
 
-                            <div class="card col-md-4 border-warning mb-4">
+                        <!-- Expiring Soon -->
+                        <div class="col-md-4">
+                            <div class="card border-warning mb-4 h-100">
                                 <div class="card-header bg-warning text-dark">
                                     <strong>Expiring Soon</strong>
                                     <span class="badge bg-danger ms-2">{{ expring_soon.count }}</span>
@@ -258,9 +268,10 @@
                                     {% endif %}
                                 </div>
                             </div>
-
-
+                        </div>
                     </div>
+
+
 
                 </div>
 

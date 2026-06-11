@@ -134,16 +134,29 @@
                             </div>
                         </li>
                         <li class="nav-item mb-3">
-                            <div class="d-flex gap-1 align-items-center">
-                                <div><img src="{% static 'svgs\notifications.svg' %}" width="24px" alt=""></div>
-                                <div>Notifications</div>
-                            </div>
+                            <a href="{% url 'donor_notifications' %}"
+                                class="d-flex gap-1 align-items-center text-decoration-none">
+                                <div><img src="{% static 'svgs/notifications.svg' %}" width="24px" alt=""></div>
+                                <div>Notifications
+                                    {% if unread_count %}
+                                    <span class="badge bg-danger">
+                                        {{ unread_count }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </a>
                         </li>
                         <li class="nav-item">
                             <div class="d-flex gap-1 align-items-center">
                                 <div><img src="{% static 'svgs\settings.svg' %}" width="24px" alt=""></div>
                                 <div>Settings</div>
                             </div>
+                        </li>
+                        <li class="nav-item mb-3 pt-3">
+                            <a href="{% url 'logout' %}" class="d-flex gap-1 align-items-center text-decoration-none">
+                                <div><img src="{% static 'svgs\logout.svg' %}" width="24px" alt=""></div>
+                                <div>Logout</div>
+                            </a>
                         </li>
                     </ul>
 
