@@ -1,5 +1,5 @@
 from django.urls import path
-from main.views import landing, add_food, donor_dashboard, consumer_dashboard, my_orders, add_order_item, view_item, add_to_cart, cart_view, decrease_quantity, remove_from_cart, increase_quantity, place_order, order_detail, expiring_soon_page, my_order_detail, cancel_order
+from main.views import landing, add_food, donor_dashboard, consumer_dashboard, my_orders, add_order_item, view_item, add_to_cart, cart_view, decrease_quantity, remove_from_cart, increase_quantity, place_order, order_detail, expiring_soon_page, my_order_detail, cancel_order, consumer_notifications, donor_notifications
 
 urlpatterns = [
     #LANDING URL
@@ -36,7 +36,9 @@ urlpatterns = [
     path("expiring-soon/", expiring_soon_page, name="expiring_soon_page_all"),
     path("expiring-soon/<int:pk>/", expiring_soon_page, name="expiring_soon_page"),
     
-
+    #NOTIFICATIONS
+    path('consumer_notifications/', consumer_notifications, name='consumer_notifications'),
+    path('donor_notifications/', donor_notifications, name='donor_notifications'),
     
 
 ]
