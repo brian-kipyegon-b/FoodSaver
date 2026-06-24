@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('authentication/', include('authentication.urls')),
+    # path('payments/', include('mpesa.urls')),
 ]
 
 

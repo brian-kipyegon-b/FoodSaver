@@ -1,6 +1,6 @@
 from django.urls import path
 from main.views import landing, add_food, donor_dashboard, consumer_dashboard, my_orders, add_order_item, view_item, add_to_cart, cart_view, decrease_quantity, remove_from_cart, increase_quantity, place_order, order_detail
-
+from mpesa.views import ProceedToPayment
 urlpatterns = [
     #LANDING URL
     path('', landing, name='landing'),
@@ -30,6 +30,7 @@ urlpatterns = [
     #URL FOR THE CHECKOUT WHERE THE CUSTOER 
     path('place_order/', place_order, name='place_order'),
 
-    
+    #URL FOR PAYMENT
+    path('payment/', ProceedToPayment, name='proceed_to_payment')
 
 ]

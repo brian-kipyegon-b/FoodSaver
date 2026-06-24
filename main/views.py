@@ -59,6 +59,8 @@ def donor_dashboard(request):
     )
 
 def consumer_dashboard(request):
+    cart = request.session.get('cart', {})
+    cart_items_count = sum(cart.values())
     fooditems = FoodItem.objects.all().order_by('-id')
     total_fooditems = FoodItem.objects.count()
     total_orders = Order.objects.count()
@@ -70,7 +72,7 @@ def consumer_dashboard(request):
             savings = (item.fooditem.original_price - item.fooditem.discounted_price) * item.quantity
             total_savings += savings
 
-    return render(request, 'main/consumer_dashboard.html', {"fooditems":fooditems, 'total_fooditems':total_fooditems, "total_orders":total_orders, 'total_savings':total_savings})
+    return render(request, 'main/consumer_dashboard.html', {"fooditems":fooditems, 'total_fooditems':total_fooditems, "total_orders":total_orders, 'total_savings':total_savings, 'cart_items_count':cart_items_count})
 
 def add_order_item(request, fooditem_id):
     fooditem = get_object_or_404(FoodItem, id=fooditem_id)
@@ -122,7 +124,8 @@ def view_cartitem(request):
     return render(request, 'main/viewitem.html')
 
 def view_item(request):
-    return render(request, 'main/viewitem.html')
+    orders = Order.objects.filter(user=request.user)
+    return render(request, 'main/viewitem.html', {'orders':orders})
 
 def add_to_cart(request, fooditem_id):
     # Get the cart from session (or create a new one)
@@ -136,7 +139,7 @@ def add_to_cart(request, fooditem_id):
     # Save cart back to session
     request.session['cart'] = cart
     # Redirect to cart page
-    return redirect('cart_view')
+    return redirect('consumer_dashboard')
 
 def cart_view(request):
     cart = request.session.get('cart', {})
