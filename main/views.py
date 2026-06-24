@@ -331,7 +331,7 @@ def consumer_notifications(request):
     notes = request.user.notifications.filter(role="consumer").order_by('-created_at')
     unread_count = request.user.notifications.filter(is_read=False).count()
     request.user.notifications.filter(is_read=False).update(is_read=True)
-    return render(request, 'main/consumer_notifications', {"notes":notes, "unread_count":unread_count})
+    return render(request, 'main/consumer_notifications.html', {"notes":notes, "unread_count":unread_count})
 
 @login_required
 def donor_notifications(request):
