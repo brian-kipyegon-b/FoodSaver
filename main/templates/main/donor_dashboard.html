@@ -110,10 +110,11 @@
 
                     <ul class="nav flex-column">
                         <li class="nav-item mb-3">
-                            <div class="d-flex gap-1 align-items-center">
+                            <a href="{% url 'donor_dashboard' %}"
+                                class="d-flex gap-1 align-items-center text-decoration-none">
                                 <div><img src="{% static 'svgs\home.svg' %}" width="24px" alt=""></div>
                                 <div>Dashboard</div>
-                            </div>
+                            </a>
                         </li>
                         <li class="nav-item mb-3">
                             <div class="d-flex gap-1 align-items-center">
@@ -235,19 +236,19 @@
                             {% if fooditems %}
                             <div class="row p-4">
                                 <div class="row" id="foodItems">
-                            {% for item in fooditems %}
-                            <div class="col-md-4 mb-4 food-card {% if forloop.counter > 6 %}d-none{% endif %}">
-                                <div class="card shadow-sm">
-                                    <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
-                                    <div class="card-body">
-                                        <h5 class="card-title">{{ item.name }}</h5>
-                                        <p class="card-text text-muted">Expires: {{ item.expiry_date }}</p>
-                                        <p class="fw-bold text-success">KES {{ item.discounted_price }}</p>
+                                    {% for item in fooditems %}
+                                    <div class="col-md-4 mb-4 food-card {% if forloop.counter > 6 %}d-none{% endif %}">
+                                        <div class="card shadow-sm">
+                                            <img src="{{ item.image.url }}" class="card-img-top" alt="{{ item.name }}">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ item.name }}</h5>
+                                                <p class="card-text text-muted">Expires: {{ item.expiry_date }}</p>
+                                                <p class="fw-bold text-success">KES {{ item.discounted_price }}</p>
+                                            </div>
+                                        </div>
                                     </div>
+                                    {% endfor %}
                                 </div>
-                            </div>
-                            {% endfor %}
-                        </div>
                             </div>
                             {% else %}
                             <div class="text-center py-5 rounded-3">No Food Items added. Add food items to your
@@ -265,7 +266,9 @@
                             <div>
                                 {% for activity in activitys %}
                                 <ul>
-                                    <li><p>{{activity.action}}</p></li>
+                                    <li>
+                                        <p>{{activity.action}}</p>
+                                    </li>
                                 </ul>
                                 {% endfor %}
                             </div>
