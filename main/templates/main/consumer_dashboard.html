@@ -97,10 +97,10 @@
                             </div>
                         </li>
                         <li class="nav-item mb-3">
-                            <div class="d-flex gap-1 align-items-center">
+                            <a href="{% url 'my_orders' %}" class="d-flex gap-1 align-items-center">
                                 <div><img src="{% static 'svgs\order.svg' %}" width="24px" alt=""></div>
                                 <div>My Orders</div>
-                            </div>
+                            </a>
                         </li>
                         <li class="nav-item mb-3">
                             <a href="{% url 'consumer_notifications' %}"

@@ -1,6 +1,6 @@
 from django.urls import path
 from main.views import landing, add_food, donor_dashboard, consumer_dashboard, my_orders, add_order_item, view_item, add_to_cart, cart_view, decrease_quantity, remove_from_cart, increase_quantity, place_order, order_detail, expiring_soon_page, my_order_detail, cancel_order, consumer_notifications, donor_notifications
-
+from mpesa.views import ProceedToPayment
 urlpatterns = [
     #LANDING URL
     path('', landing, name='landing'),
@@ -39,6 +39,9 @@ urlpatterns = [
     #NOTIFICATIONS
     path('consumer_notifications/', consumer_notifications, name='consumer_notifications'),
     path('donor_notifications/', donor_notifications, name='donor_notifications'),
+
+    #PAYMENTS
+    path('payment/<int:order_id>/', ProceedToPayment, name="proceed_to_payment"),
     
 
 ]

@@ -37,7 +37,12 @@
     </table>
   </div>
 
-  <h4 class="mt-4">Total Price: <span class="text-success">KES {{ total_price }}</span></h4>
+  <div class="d-flex justify-content-between">
+    <h4 class="mt-4">Total Price: <span class="text-success">KES {{ total_price }}</span></h4>
+    <a href="{% url 'proceed_to_payment' order.id %}" class="btn btn-outline-success mt-3 px-3 fw-bold">
+    Pay KSH. {{ total_price }}
+  </a>
+  </div>
 
   <a href="{% url 'consumer_dashboard' %}" class="btn btn-outline-primary mt-3">
     <i class="bi bi-arrow-left-circle"></i> Back to Dashboard

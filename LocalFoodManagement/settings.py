@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'main',
+    'mpesa',
+    'django_daraja',
 ]
 
 MIDDLEWARE = [
@@ -124,3 +126,24 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Environment: sandbox or production
+MPESA_ENVIRONMENT = 'sandbox'
+
+# Daraja app credentials
+MPESA_CONSUMER_KEY = '623zFD2nfi5XpAJoCbXzhzGpO3enZmNxiYuIhzQArsdqQe9A'
+MPESA_CONSUMER_SECRET = 'PVGeP4YFAF01V6KPFbMksjdoN7G9Adh7zDJ3Bu1Zdg7iPxUVBCUoJUAevGUAe0KP'
+
+# Shortcodes
+MPESA_SHORTCODE = '174379'              # Paybill/Till
+MPESA_EXPRESS_SHORTCODE = '174379'  # sandbox only
+
+# Shortcode type: paybill or till_number
+MPESA_SHORTCODE_TYPE = 'paybill'
+
+# Passkey for Lipa na M-Pesa Online
+MPESA_PASSKEY = 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919'
+
+# Initiator credentials (for advanced APIs like B2C, not needed for STK Push)
+MPESA_INITIATOR_USERNAME = 'fOODSAVER'
+MPESA_INITIATOR_SECURITY_CREDENTIAL = 'initiator_security_credential'

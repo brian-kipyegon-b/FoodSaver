@@ -127,6 +127,11 @@ def order(request, ):
 @login_required
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    for order in orders:
+        order.total_amount = sum(
+            item.fooditem.discounted_price * item.quantity
+            for item in order.items.all()
+        )
     return render(request, 'main/orders.html', {"orders":orders})
 
 @login_required
@@ -138,12 +143,12 @@ def cancel_order(request, order_id):
         fooditem = order_item.fooditem
         fooditem.stock += order_item.quantity
         fooditem.save()
-    # Option 1: Delete the order completely
-    order.delete()
-    messages.success(request, "Order cancelled and stock restored.")
 
     order.status = "cancelled"
     order.save()
+
+    Notification.objects.create(user=fooditem.created_by, role="donor", type="order", message=f"{request.user.username} cancelled order {order.id}", is_read=False)
+    Notification.objects.create(user=request.user, role="consumer", type="order", message=f"Order #{order.id} has been cancelled successfully!")
     messages.success(request, "Order marked as cancelled and stock restored.")
 
     return redirect('my_orders')

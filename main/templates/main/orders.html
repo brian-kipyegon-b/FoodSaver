@@ -40,7 +40,7 @@
                             {{ item.name }} ({{ item.quantity }})<br>
                             {% endfor %}
                         </td>
-                        <td>KES {{ total_price }}</td>
+                        <td>KES {{ order.total_amount }}</td>
                         <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
                         <td>
                             <span class="badge 
@@ -53,8 +53,11 @@
                         <td>
                             <a href="{% url 'my_order_detail' order.id %}"
                                 class="btn btn-sm btn-outline-primary">View</a>
-                            <a href="{% url 'cancel_order' order.id %}"
-                                class="btn btn-sm btn-outline-danger">Cancel</a>
+                            {% if order.status == "cancelled" %}
+                            <a href="#" class="btn btn-sm btn-outline-danger">Cancelled</a>
+                            {% else %}
+                            <a href="{% url 'cancel_order' order.id %}" class="btn btn-sm btn-outline-danger">Cancel</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% empty %}
