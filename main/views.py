@@ -143,11 +143,11 @@ def cancel_order(request, order_id):
         fooditem = order_item.fooditem
         fooditem.stock += order_item.quantity
         fooditem.save()
+    Notification.objects.create(user=fooditem.created_by, role="donor", type="order", message=f"{request.user.username} cancelled order {order.id}", is_read=False)
 
     order.status = "cancelled"
     order.save()
 
-    Notification.objects.create(user=fooditem.created_by, role="donor", type="order", message=f"{request.user.username} cancelled order {order.id}", is_read=False)
     Notification.objects.create(user=request.user, role="consumer", type="order", message=f"Order #{order.id} has been cancelled successfully!")
     messages.success(request, "Order marked as cancelled and stock restored.")
 
@@ -268,8 +268,11 @@ def place_order(request):
     if not cart:
         messages.error(request, "Your cart is empty!")
         return redirect('cart_view')
-    # Create a new order for the logged-in user
-    order = Order.objects.create(user=request.user)
+    # Create a new order for the logged-in 
+    first_item_id = next(iter(cart))
+    first_fooditem = get_object_or_404(FoodItem, id=first_item_id)
+
+    order = Order.objects.create(user=request.user, donor=first_fooditem.created_by)
     for item_id, qty in cart.items():
         fooditem = get_object_or_404(FoodItem, id=item_id)
         # Check stock before reducing
@@ -344,3 +347,51 @@ def donor_notifications(request):
     unread_count = request.user.notifications.filter(is_read=False).count()
     request.user.notifications.filter(is_read=False).update(is_read=True)
     return render(request, 'main/donor_notifications.html', {"notes":notes, "unread_count":unread_count})
+
+@login_required
+def donor_orders(request):
+    donor = request.user
+    orders = donor.donor_orders.prefetch_related("items__fooditem").order_by("-created_at")
+
+    # Compute total amount for each order
+    for order in orders:
+        total = sum(item.fooditem.discounted_price * item.quantity for item in order.items.all())
+        order.total_amount = total
+
+    return render(request, "main/donor_orders.html", {"orders": orders})
+
+@login_required
+def donor_order_detail(request, order_id):
+    donor = request.user
+    order = get_object_or_404(Order, id=order_id, donor=donor)
+    items_with_subtotals = []
+    total_amount = 0
+    for item in order.items.all():
+        subtotal = item.fooditem.discounted_price * item.quantity
+        items_with_subtotals.append({
+            "name": item.fooditem.name,
+            "quantity": item.quantity,
+            "price": item.fooditem.discounted_price,
+            "subtotal": subtotal,
+        })
+        total_amount += subtotal
+
+    context = {
+        "order": order,
+        "items": items_with_subtotals,
+        "total_amount": total_amount,
+    }
+    return render(request, "main/donor_order_detail.html", context)
+
+
+@login_required
+def donor_delete_order(request, order_id):
+    donor = request.user
+    order = get_object_or_404(Order, id=order_id, donor=donor)
+
+    if request.method == "POST":
+        order.delete()
+        messages.success(request, f"Order #{order.id} has been deleted.")
+        return redirect("donor_orders")
+
+    return render(request, "main/donor_confirm_delete.html", {"order": order})

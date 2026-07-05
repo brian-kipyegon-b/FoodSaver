@@ -1,5 +1,5 @@
 from django.urls import path
-from main.views import landing, add_food, donor_dashboard, consumer_dashboard, my_orders, add_order_item, view_item, add_to_cart, cart_view, decrease_quantity, remove_from_cart, increase_quantity, place_order, order_detail, expiring_soon_page, my_order_detail, cancel_order, consumer_notifications, donor_notifications
+from main.views import landing, add_food, donor_dashboard, consumer_dashboard, my_orders, add_order_item, view_item, add_to_cart, cart_view, decrease_quantity, remove_from_cart, increase_quantity, place_order, order_detail, expiring_soon_page, my_order_detail, cancel_order, consumer_notifications, donor_notifications, donor_orders, donor_order_detail, donor_delete_order # donor_food_items
 from mpesa.views import ProceedToPayment
 urlpatterns = [
     #LANDING URL
@@ -11,6 +11,7 @@ urlpatterns = [
 
     #URL TO ADD FOOD ITEM TO THE SYSTEM BY THE DONORS
     path('add_food/', add_food, name='add_food'),
+    # path('View_all', donor_food_items, name='donor_food_items'),
 
     #URLS FOR THE ORDER
     path('my_orders/', my_orders, name='my_orders'),
@@ -18,6 +19,9 @@ urlpatterns = [
     path('order/<int:order_id>/', order_detail, name='order_detail'),
     path("my_orders_details/<int:order_id>/", my_order_detail, name="my_order_detail"),
     path("my_orders/<int:order_id>/cancel/", cancel_order, name="cancel_order"),
+    path("orders/", donor_orders, name="donor_orders"),
+    path("orders/<int:order_id>/", donor_order_detail, name="donor_order_detail"),
+    path("orders/<int:order_id>/delete/", donor_delete_order, name="donor_delete_order"),
 
     #URLS TO THE CART WHERE CUSTOMERS CAN TEMPORARILY ADD ITEMS BEFORE FINALLY MAKING THE FINAL DECISION
     path('viewitem/<int:item_id>/', view_item, name='view_item'),
