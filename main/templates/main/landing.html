@@ -5,97 +5,518 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food Management System</title>
+    <title>FoodSaver - Reduce Food Waste, Feed Communities</title>
+    
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        .fearure-card:hover {
-            transform: translateY(-5px);
-            transition: 0.3s;
-            box-shadow: 1px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        :root {
+            --primary-color: #2E7D32; /* Deep Professional Green */
+            --secondary-color: #66BB6A; /* Lighter Accent Green */
+            --bg-light: #F9FBF9;
+            --text-dark: #2C3E50;
+            --text-muted: #6C757D;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* --- Navbar --- */
+        .navbar {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            padding: 15px 0;
+        }
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.6rem;
+            color: var(--primary-color) !important;
+        }
+        .navbar-brand span {
+            color: var(--text-dark);
+        }
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-dark) !important;
+            margin: 0 10px;
+            position: relative;
+        }
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        .btn-primary-custom {
+            background-color: var(--primary-color);
+            color: white !important;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 28px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary-custom:hover {
+            background-color: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+            color: white !important;
+        }
+
+        /* --- Hero Section --- */
+        .hero-section {
+            background: linear-gradient(135deg, #E8F5E9 0%, #FFFFFF 100%);
+            padding: 120px 0 100px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(102,187,106,0.15) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+        }
+        .hero-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 25px;
+        }
+        .hero-title span {
+            color: var(--primary-color);
+        }
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        .btn-outline-custom {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 50px;
+            padding: 8px 28px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-custom:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* --- Features Section --- */
+        .features-section {
+            padding: 100px 0;
+            background-color: #fff;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .section-subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 60px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.1rem;
+        }
+        .feature-card {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 20px;
+            padding: 45px 30px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            height: 100%;
+        }
+        .feature-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: transparent;
+        }
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-light);
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin: 0 auto 25px;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover .feature-icon {
+            background: var(--primary-color);
+            color: #fff;
+            transform: scale(1.1) rotate(5deg);
+        }
+        .feature-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* --- About Section --- */
+        .about-section {
+            padding: 100px 0;
+            background-color: var(--bg-light);
+        }
+        .about-img-wrapper {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            height: 450px;
+        }
+        .about-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .about-img-wrapper:hover img {
+            transform: scale(1.05);
+        }
+        .about-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 25px;
+        }
+        .about-content p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .about-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 35px;
+            padding-top: 35px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+        .stat-item h3 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+        .stat-item p {
+            font-size: 0.95rem;
+            margin: 0;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- CTA Section --- */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1B5E20 100%);
+            padding: 100px 0;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-section h2 {
+            color: white;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        .cta-section p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-light-custom {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        .btn-light-custom:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            color: var(--primary-color);
+        }
+
+        /* --- Footer --- */
+        .footer {
+            background-color: #1A2E1F;
+            color: #ccc;
+            padding: 80px 0 30px;
+        }
+        .footer h5 {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        .footer a {
+            color: #aaa;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: block;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+        .footer a:hover {
+            color: var(--secondary-color);
+            transform: translateX(3px);
+        }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 50px;
+            padding-top: 25px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .social-icons a {
+            display: inline-flex;
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            color: #ccc;
+        }
+        .social-icons a:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-4px);
+        }
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 992px) {
+            .hero-title { font-size: 3rem; }
+            .about-stats { gap: 20px; }
+        }
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.4rem; }
+            .hero-section { padding: 80px 0; }
+            .about-stats { flex-direction: column; gap: 20px; text-align: center; }
+            .section-title { font-size: 2rem; }
+            .cta-section h2 { font-size: 2rem; }
         }
     </style>
-
 </head>
 
-<body style="background: rgba(0, 0, 0, 0.06);">
+<body>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"> <img class="rounded-circle" src="{% static 'images\profile.jpg' %}"
-                    width="40px" height="40px" alt=""> Food<span class="text-success">Saver</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <!-- Changed backslash to forward slash for better cross-platform URL compatibility -->
+                <img class="rounded-circle me-2" src="{% static 'images/profile.jpg' %}" width="40" height="40" alt="Logo">
+                Food<span>Saver</span>
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav d-flex align-items-end ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#features">Features</a>
+                        <a class="nav-link" href="#features">Features</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#about">About</a>
+                        <a class="nav-link" href="#about">About</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="btn btn-success px-3 fw-bold shadow-sm" aria-current="page"
-                            href="{% url 'login' %}">Log in</a>
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <a class="btn btn-primary-custom" href="{% url 'login' %}">Log In</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-
-    <section class="text-center py-5">
-        <h1 class="display-5" style="font-family: 'Permanent Marker', cursive; font-weight: 800; font-style: normal;">
-            Reduce Food Waste, Feed Communities</h1>
-        <p class="font-family: 'Poppins', sans-serif; font-weight: 900; font-style: italic;">Connect surplus food from
-            restaurants and households with people who need it.</p>
-        <h6 class="pb-3">Simple Transparent & Impactful</h6>
-        <a type="button" href="{% url 'register' %}" class="btn btn-success btn-lg">Join Now</a>
-    </section>
-
-    <section class="d-flex container pt-5 gap-3" id="features">
-        <div class="card shadow-sm col-md-4 text-center bg-light p-3 fearure-card">
-            <h4>List Surplus Food</h4>
-            <p>Donors can easily list extra meals or groceries with expiry details and pickup location.</p>
-        </div>
-        <div class="card shadow-sm col-md-4 text-center bg-light p-3 fearure-card">
-            <h4>Claim & share</h4>
-            <p>Community members browse available food and claim items instantly.</p>
-        </div>
-        <div class="card shadow-sm col-md-4 text-center bg-light p-3 fearure-card">
-            <h4>Make Purchase</h4>
-            <p>Optional small payments or donations handled securely via M-Pesa.</p>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container position-relative">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="hero-title">Reduce Food Waste, <span>Feed Communities</span></h1>
+                    <p class="hero-subtitle">Connect surplus food from restaurants and households with people who need it. Simple, transparent, and impactful.</p>
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="{% url 'register' %}" class="btn btn-primary-custom btn-lg px-5">Join Now</a>
+                        <a href="#features" class="btn btn-outline-custom btn-lg px-5">Learn More</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="container bg-light rounded-4 d-flex gap-3 align-items-center justify-content-center my-5 p-4 my-5"
-        id="about">
-        <div class="w-50">
-            <img class="rounded-4 object-fit-cover w-100" src="{% static 'images\home.jpg' %}" height="400px" alt="">
-        </div>
-        <div class="w-50 text-center">
-            <h1>About FoodSaver</h1>
-            <p>We believe no meals should go to waste while others go hungry. Our platform connects surplus food with
-                those who need it most, reducing wastes and feeding communities.</p>
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Our platform makes it easy to share surplus food and make a difference in your community.</p>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <h4>List Surplus Food</h4>
+                        <p>Donors can easily list extra meals or groceries with expiry details and pickup location in just a few clicks.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4>Claim & Share</h4>
+                        <p>Community members browse available food nearby and claim items instantly to help those in need.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <i class="bi bi-cash-coin"></i>
+                        </div>
+                        <h4>Make Purchases</h4>
+                        <p>Optional small payments or donations are handled securely and seamlessly via M-Pesa integration.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section id="signup" class="py-5">
-        <div class="container text-center">
-            <h2 class="fw-bold">Get Started Today</h2>
-            <p class="mt-3">Sign up as a donor or consumer and start making an impact.</p>
-            <a href="{% url 'register' %}" class="btn btn-success btn-lg">Sign Up</a>
+    <!-- About Section -->
+    <section class="about-section" id="about">
+        <div class="container">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <div class="about-img-wrapper">
+                        <img src="{% static 'images/home.jpg' %}" alt="About FoodSaver">
+                    </div>
+                </div>
+                <div class="col-lg-6 about-content">
+                    <h2>About FoodSaver</h2>
+                    <p>We believe no meals should go to waste while others go hungry. Our platform connects surplus food with those who need it most, reducing environmental impact and feeding our communities.</p>
+                    <p>Join a growing network of donors, volunteers, and consumers dedicated to building a more sustainable and compassionate food system.</p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <h3>10k+</h3>
+                            <p>Meals Saved</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>500+</h3>
+                            <p>Active Donors</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>50+</h3>
+                            <p>Communities</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <footer class="bg-dark text-center py-3 text-white">
-        <p>&copy; 2026 FoodSaver</p>
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container position-relative">
+            <h2>Ready to Make an Impact?</h2>
+            <p>Sign up as a donor or consumer today and start saving food, saving money, and helping the planet.</p>
+            <a href="{% url 'register' %}" class="btn btn-light-custom">Get Started Today</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 mb-3">
+                    <h5 class="d-flex align-items-center text-white">
+                        <img class="rounded-circle me-2" src="{% static 'images/profile.jpg' %}" width="30" height="30" alt="">
+                        FoodSaver
+                    </h5>
+                    <p class="pe-lg-5">Connecting surplus food with those who need it most. Together, we can reduce waste and feed our communities.</p>
+                    <div class="social-icons mt-4">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4">
+                    <h5>Quick Links</h5>
+                    <a href="#features">Features</a>
+                    <a href="#about">About Us</a>
+                    <a href="{% url 'login' %}">Log In</a>
+                    <a href="{% url 'register' %}">Sign Up</a>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <h5>Resources</h5>
+                    <a href="#">How it Works</a>
+                    <a href="#">FAQs</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+                <div class="col-lg-3 col-md-4">
+                    <h5>Contact Us</h5>
+                    <p><i class="bi bi-envelope-fill me-2 text-secondary"></i> support@foodsaver.com</p>
+                    <p><i class="bi bi-telephone-fill me-2 text-secondary"></i> +123 456 7890</p>
+                    <p><i class="bi bi-geo-alt-fill me-2 text-secondary"></i> Nairobi, Kenya</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2026 FoodSaver. All rights reserved. Designed with <i class="bi bi-heart-fill text-danger"></i> for a better world.</p>
+            </div>
+        </div>
     </footer>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>

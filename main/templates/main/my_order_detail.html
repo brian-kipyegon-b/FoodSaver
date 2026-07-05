@@ -1,52 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
 
+<head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order_details</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-</head>
-<body>
+    <title>Order #{{ order.id }} - FoodSaver</title>
     
-<div class="container mt-5">
-  <h2 class="mb-4 text-center">Order #{{ order.id }}</h2>
-  <p><strong>Placed on:</strong> {{ order.created_at }}</p>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-  <div class="table-responsive">
-    <table class="table table-striped align-middle">
-      <thead class="table-dark">
-        <tr>
-          <th scope="col">Item</th>
-          <th scope="col">Quantity</th>
-          <th scope="col">Price (KES)</th>
-          <th scope="col">Subtotal (KES)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item in items %}
-        <tr>
-          <td>{{ item.fooditem.name }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.fooditem.discounted_price }}</td>
-          <td>{{ item.subtotal }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <style>
+        :root {
+            --primary-color: #2E7D32;
+            --secondary-color: #66BB6A;
+            --bg-light: #F9FBF9;
+            --text-dark: #2C3E50;
+            --text-muted: #6C757D;
+        }
 
-  <h4 class="mt-4">Total Price: <span class="text-success">KES {{ total_price }}</span></h4>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
 
-  <a href="{% url 'my_orders' %}" class="btn btn-outline-primary mt-3 px-3">
-    &larr; Back
-  </a>
-</div>
+        /* --- Sidebar Styles (Matches Dashboard) --- */
+        .sidebar {
+            width: 260px;
+            background: #fff;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+            z-index: 1040;
+        }
+        .sidebar .nav-link {
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin-bottom: 4px;
+        }
+        .sidebar .nav-link:hover {
+            background: rgba(46, 125, 50, 0.05);
+            color: var(--primary-color);
+        }
+        .sidebar .nav-link.active {
+            background: rgba(46, 125, 50, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .sidebar .nav-link i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
 
+        /* --- Main Content Area --- */
+        .main-content {
+            margin-left: 260px;
+            transition: margin-left 0.3s ease;
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+        @media (max-width: 767.98px) {
+            .main-content {
+                margin-left: 0;
+            }
+            .top-bar {
+                margin-top: 60px; 
+            }
+        }
+
+        /* --- Modern Table Styles --- */
+        .custom-table {
+            margin-bottom: 0;
+        }
+        .custom-table thead th {
+            background-color: #f8f9fa;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-top: none;
+        }
+        .custom-table tbody td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+            font-size: 0.95rem;
+            color: var(--text-dark);
+        }
+        .custom-table tbody tr:hover {
+            background-color: rgba(46, 125, 50, 0.02);
+        }
+        .custom-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* --- Payment Summary Card --- */
+        .summary-card {
+            border: 1px solid rgba(0,0,0,0.05);
+            border-radius: 16px;
+        }
+        .btn-checkout {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-checkout:hover {
+            background: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(46, 125, 50, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Top Navbar -->
+    <nav class="navbar navbar-light bg-white d-md-none fixed-top shadow-sm">
+        <div class="container-fluid">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasSidebar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand fw-bold text-success mb-0" href="#">Food<span class="text-dark">Saver</span></a>
+            <div class="d-flex align-items-center gap-2">
+                <img src="{% static 'images/profile.jpg' %}" width="32" height="32" class="rounded-circle" alt="">
+            </div>
+        </div>
+    </nav>
+
+    <!-- Offcanvas Sidebar (Mobile) -->
+    <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="offcanvasSidebar" style="width: 260px;">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold">Food<span class="text-success">Saver</span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="{% url 'consumer_dashboard' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'my_orders' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2 active"><i class="bi bi-bag-fill"></i> My Orders</a></li>
+                <li class="nav-item"><a href="{% url 'consumer_notifications' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-bell-fill"></i> Notifications {% if unread_count %}<span class="badge bg-danger rounded-pill ms-auto">{{ unread_count }}</span>{% endif %}</a></li>
+                <li class="nav-item"><a href="#" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-person-fill"></i> Profile</a></li>
+                <li class="nav-item"><a href="#" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-gear-fill"></i> Settings</a></li>
+                <li class="nav-item mt-auto pt-3 border-top"><a href="{% url 'logout' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2 text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Desktop Sidebar (Fixed) -->
+    <div class="sidebar d-none d-md-flex flex-column position-fixed top-0 start-0 vh-100">
+        <div class="sidebar-header p-4 border-bottom">
+            <a href="#" class="text-decoration-none d-flex align-items-center">
+                <img src="{% static 'images/profile.jpg' %}" width="36" height="36" class="rounded-circle me-2" alt="">
+                <span class="fs-4 fw-bold text-dark">Food<span class="text-success">Saver</span></span>
+            </a>
+        </div>
+        <div class="sidebar-nav p-3 d-flex flex-column h-100">
+            <ul class="nav flex-column">
+                <li class="nav-item"><a href="{% url 'consumer_dashboard' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="{% url 'my_orders' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2 active"><i class="bi bi-bag-fill"></i> My Orders</a></li>
+                <li class="nav-item"><a href="{% url 'consumer_notifications' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2 position-relative"><i class="bi bi-bell-fill"></i> Notifications {% if unread_count %}<span class="badge bg-danger rounded-pill ms-auto">{{ unread_count }}</span>{% endif %}</a></li>
+                <li class="nav-item"><a href="#" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-person-fill"></i> Profile</a></li>
+                <li class="nav-item"><a href="#" class="nav-link d-flex align-items-center gap-3 px-3 py-2"><i class="bi bi-gear-fill"></i> Settings</a></li>
+            </ul>
+            <div class="mt-auto pt-3 border-top mx-2">
+                <a href="{% url 'logout' %}" class="nav-link d-flex align-items-center gap-3 px-3 py-2 text-danger"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar d-none d-md-flex justify-content-between align-items-center p-4 bg-white border-bottom sticky-top">
+            <div>
+                <h4 class="mb-0 fw-bold">Order Details</h4>
+                <p class="text-muted small mb-0">Review your order and proceed to payment.</p>
+            </div>
+            <a href="{% url 'my_orders' %}" class="btn btn-outline-secondary rounded-pill">
+                <i class="bi bi-arrow-left me-2"></i>Back to Orders
+            </a>
+        </div>
+
+        <div class="p-4">
+            <div class="row g-4">
+                <!-- Left Column: Order Info & Items -->
+                <div class="col-lg-8">
+                    <!-- Order Info Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                                <h5 class="fw-bold mb-0">Order #{{ order.id }}</h5>
+                                <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2">Pending Payment</span>
+                            </div>
+                            <div class="d-flex gap-4 text-muted small">
+                                <div><i class="bi bi-calendar3 me-1"></i> Placed on: {{ order.created_at|date:"M d, Y \a\t H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items Table Card -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
+                            <h5 class="fw-bold mb-0">Order Items</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table custom-table align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Item</th>
+                                            <th scope="col" class="text-center">Quantity</th>
+                                            <th scope="col" class="text-end">Price (KES)</th>
+                                            <th scope="col" class="text-end">Subtotal (KES)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in items %}
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3">
+                                                    <div class="bg-success bg-opacity-10 text-success rounded-3 p-2 flex-shrink-0">
+                                                        <i class="bi bi-box-seam fs-4"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-bold">{{ item.fooditem.name }}</h6>
+                                                        <small class="text-muted">Food Item</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="badge bg-light text-dark border rounded-pill fw-normal">{{ item.quantity }}</span>
+                                            </td>
+                                            <td class="text-end fw-medium">{{ item.fooditem.discounted_price }}</td>
+                                            <td class="text-end fw-bold text-primary">{{ item.subtotal }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Payment Summary -->
+                <div class="col-lg-4">
+                    <div class="card summary-card bg-white sticky-top shadow-sm" style="top: 100px;">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-4">Payment Summary</h5>
+                            
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Items Total</span>
+                                <span class="fw-medium">KES {{ total_price }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Delivery Fee</span>
+                                <span class="fw-medium text-success">Free</span>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="d-flex justify-content-between mb-4">
+                                <h5 class="fw-bold mb-0">Total</h5>
+                                <h5 class="fw-bold mb-0 text-success">KES {{ total_price }}</h5>
+                            </div>
+
+                            <a href="{% url 'proceed_to_payment' order.id %}" class="btn btn-checkout w-100 py-3 fw-bold rounded-pill shadow-sm">
+                                <i class="bi bi-credit-card me-2"></i>Proceed to Payment
+                            </a>
+                            
+                            <p class="text-muted text-center small mt-3 mb-0">
+                                <i class="bi bi-shield-check me-1"></i>Secure M-Pesa Payment
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

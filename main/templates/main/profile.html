@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Profile</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f4f7f6; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        
+        /* Hero Section */
+        .hero { position: relative; height: 200px; background: linear-gradient(135deg, #6e8efb, #a777e3); }
+        .profile-header { display: flex; align-items: flex-end; padding: 0 40px; margin-top: -60px; position: relative; }
+        .avatar { width: 120px; height: 120px; border-radius: 50%; border: 5px solid #fff; background: #ddd; object-fit: cover; }
+        .header-info { margin-left: 20px; padding-bottom: 20px; color: #fff; }
+        .header-info h1 { margin: 0; font-size: 24px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+        .header-info p { margin: 5px 0 0; opacity: 0.9; }
+        
+        /* Action Bar */
+        .actions { display: flex; justify-content: space-between; padding: 20px 40px; border-bottom: 1px solid #eee; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background: #6e8efb; color: white; }
+        .stats { display: flex; gap: 20px; align-items: center; font-size: 14px; color: #666; }
+        
+        /* Content Area */
+        .content { display: flex; padding: 40px; gap: 40px; }
+        .main-col { flex: 2; }
+        .sidebar { flex: 1; background: #f9f9f9; padding: 20px; border-radius: 8px; height: fit-content; }
+        
+        h2 { border-bottom: 2px solid #6e8efb; display: inline-block; padding-bottom: 5px; margin-top: 0; }
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .portfolio-item { height: 150px; background: #e0e0e0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #888; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Hero & Header -->
+    <div class="hero"></div>
+    <div class="profile-header">
+        <img src="https://via.placeholder.com/120" alt="Profile" class="avatar">
+        <div class="header-info">
+            <h1>Your Name / Business</h1>
+            <p>Expert Digital Creator & Consultant • 📍 New York, NY</p>
+        </div>
+    </div>
+
+    <!-- Actions & Stats -->
+    <div class="actions">
+        <button class="btn btn-primary">Contact Me</button>
+        <div class="stats">
+            <span>⭐ 4.9 (124 Reviews)</span>
+            <span>✅ Verified</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="main-col">
+            <h2>About Me</h2>
+            <p>Welcome to my profile! I specialize in creating high-quality digital experiences. With over 5 years of experience, I help businesses scale through innovative solutions...</p>
+            
+            <h2 style="margin-top: 30px;">Portfolio</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">Project 1</div>
+                <div class="portfolio-item">Project 2</div>
+                <div class="portfolio-item">Project 3</div>
+                <div class="portfolio-item">Project 4</div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Quick Info</h3>
+            <p><strong>Member since:</strong><br>Jan 2023</p>
+            <p><strong>Response time:</strong><br>~ 2 hours</p>
+            <p><strong>Languages:</strong><br>English, Spanish</p>
+            <hr>
+            <h3>Connect</h3>
+            <p>🔗 Website<br>🐦 Twitter<br>💼 LinkedIn</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

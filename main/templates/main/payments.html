@@ -5,7 +5,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - FoodSaver</title>
+    <title>Secure Checkout - FoodSaver</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -75,67 +75,82 @@
             }
         }
 
-        /* --- Cart Item Card --- */
-        .cart-item-card {
-            background: #fff;
+        /* --- Payment Specific Styles --- */
+        .payment-card {
             border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: all 0.2s ease;
-        }
-        .cart-item-card:hover {
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-color: rgba(46, 125, 50, 0.2);
-        }
-
-        /* --- Quantity Controls --- */
-        .qty-control {
-            display: inline-flex;
-            align-items: center;
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 50px;
+            border-radius: 20px;
             overflow: hidden;
-            background: #fff;
         }
-        .qty-control a {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dark);
-            text-decoration: none;
-            transition: all 0.2s;
-            font-weight: 600;
-        }
-        .qty-control a:hover {
-            background: var(--primary-color);
-            color: #fff;
-        }
-        .qty-control span {
-            width: 40px;
+        .payment-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #1B5E20 100%);
+            color: white;
+            padding: 2.5rem 2rem;
             text-align: center;
-            font-weight: 600;
+        }
+        .amount-display {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+            letter-spacing: -0.02em;
+        }
+        .payment-body {
+            padding: 2.5rem;
+        }
+        
+        /* Custom Input Group Focus */
+        .input-group-text {
+            background: var(--bg-light);
+            border-right: none;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        .input-group .form-control {
+            border-left: none;
             font-size: 1.1rem;
+            padding: 0.8rem 1rem;
+        }
+        .input-group .form-control:focus {
+            box-shadow: none;
+            border-color: #ced4da;
+        }
+        .input-group:focus-within {
+            box-shadow: 0 0 0 0.25rem rgba(46, 125, 50, 0.25);
+            border-radius: 0.5rem;
         }
 
-        /* --- Summary Card --- */
-        .summary-card {
-            border: 1px solid rgba(0,0,0,0.05);
-            border-radius: 16px;
-        }
-        .btn-checkout {
+        /* Buttons */
+        .btn-pay {
             background: var(--primary-color);
             color: white;
             border: none;
             transition: all 0.3s ease;
+            font-size: 1.15rem;
+            padding: 0.9rem;
         }
-        .btn-checkout:hover {
+        .btn-pay:hover {
             background: #1B5E20;
             transform: translateY(-2px);
             box-shadow: 0 8px 15px rgba(46, 125, 50, 0.3);
             color: white;
+        }
+
+        /* Trust Badges */
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px dashed rgba(0,0,0,0.1);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .trust-badges i {
+            color: var(--primary-color);
+            margin-right: 0.25rem;
+            font-size: 1rem;
         }
     </style>
 </head>
@@ -200,8 +215,8 @@
         <!-- Top Bar -->
         <div class="top-bar d-none d-md-flex justify-content-between align-items-center p-4 bg-white border-bottom sticky-top">
             <div>
-                <h4 class="mb-0 fw-bold">Shopping Cart</h4>
-                <p class="text-muted small mb-0">Review your items before checkout.</p>
+                <h4 class="mb-0 fw-bold">Secure Checkout</h4>
+                <p class="text-muted small mb-0">Complete your payment to finalize your order.</p>
             </div>
             <div class="d-flex align-items-center gap-3">
                 <div class="text-end">
@@ -212,96 +227,77 @@
             </div>
         </div>
 
-        <div class="p-4">
-            <div class="row g-4">
-                <!-- Left Column: Cart Items -->
-                <div class="col-lg-8">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold mb-0">Cart Items</h5>
-                        <a href="{% url 'consumer_dashboard' %}" class="btn btn-sm btn-outline-secondary rounded-pill">
-                            <i class="bi bi-arrow-left me-1"></i> Continue Shopping
-                        </a>
-                    </div>
-
-                    {% if items %}
-                        {% for item in items %}
-                        <div class="cart-item-card">
-                            <div class="d-flex flex-column flex-md-row align-items-md-center gap-3">
-                                <!-- Item Info -->
-                                <div class="d-flex align-items-center gap-3 flex-grow-1">
-                                    <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 flex-shrink-0">
-                                        <i class="bi bi-box-seam fs-3"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="fw-bold mb-1">{{ item.fooditem.name }}</h6>
-                                        <small class="text-muted d-block mb-1"><i class="bi bi-clock me-1"></i>Expires: {{ item.fooditem.expiry_date }}</small>
-                                        <div class="fw-medium text-success d-md-none">KES {{ item.fooditem.discounted_price }} each</div>
-                                    </div>
+        <!-- Centered Content Area -->
+        <div class="p-4 d-flex justify-content-center align-items-start" style="min-height: calc(100vh - 80px);">
+            <div class="row g-4 w-100" style="max-width: 1000px;">
+                
+                <!-- Left Column: Order Summary -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column justify-content-center">
+                            <h5 class="fw-bold text-muted text-uppercase small mb-3">Order Summary</h5>
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="bg-success bg-opacity-10 text-success rounded-3 p-3">
+                                    <i class="bi bi-bag-check fs-2"></i>
                                 </div>
-
-                                <!-- Actions -->
-                                <div class="d-flex align-items-center gap-4 ms-md-auto">
-                                    <div class="qty-control">
-                                        <a href="{% url 'decrease_quantity' item.fooditem.id %}"><i class="bi bi-dash"></i></a>
-                                        <span>{{ item.quantity }}</span>
-                                        <a href="{% url 'increase_quantity' item.fooditem.id %}"><i class="bi bi-plus"></i></a>
-                                    </div>
-                                    <div class="text-end">
-                                        <small class="text-muted d-none d-md-block">Subtotal</small>
-                                        <h5 class="fw-bold mb-0 text-primary">KES {{ item.subtotal }}</h5>
-                                    </div>
-                                    <a href="{% url 'remove_from_cart' item.fooditem.id %}" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Remove this item from cart?')">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                <div>
+                                    <h6 class="fw-bold mb-1">FoodSaver Order</h6>
+                                    <p class="text-muted small mb-0">Thank you for saving food!</p>
                                 </div>
                             </div>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <!-- Empty State -->
-                        <div class="card border-0 shadow-sm">
-                            <div class="card-body text-center py-5">
-                                <div class="mb-4">
-                                    <i class="bi bi-cart-x display-1 text-muted opacity-25"></i>
-                                </div>
-                                <h5 class="text-muted fw-bold">Your cart is empty</h5>
-                                <p class="text-muted mb-0">Looks like you haven't added any food items yet.<br>Start exploring to fill your cart!</p>
-                                <a href="{% url 'consumer_dashboard' %}" class="btn btn-success rounded-pill mt-3 px-4">Browse Food</a>
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-
-                <!-- Right Column: Order Summary -->
-                <div class="col-lg-4">
-                    <div class="card summary-card bg-white sticky-top shadow-sm" style="top: 100px;">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold mb-4">Order Summary</h5>
-                            
-                            <div class="d-flex justify-content-between mb-3">
+                            <hr>
+                            <div class="d-flex justify-content-between mb-2">
                                 <span class="text-muted">Subtotal</span>
-                                <span class="fw-medium">KES {{ total }}</span>
+                                <span class="fw-medium">KES {{ total_price }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-3">
                                 <span class="text-muted">Delivery Fee</span>
                                 <span class="fw-medium text-success">Free</span>
                             </div>
-                            
                             <hr>
-                            
-                            <div class="d-flex justify-content-between mb-4">
-                                <h5 class="fw-bold mb-0">Total</h5>
-                                <h5 class="fw-bold mb-0 text-success">KES {{ total }}</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold mb-0">Total to Pay</h5>
+                                <h4 class="fw-bold mb-0 text-success">KES {{ total_price }}</h4>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <a href="{% url 'place_order' %}" class="btn btn-checkout w-100 py-3 fw-bold rounded-pill shadow-sm mb-3">
-                                <i class="bi bi-bag-check me-2"></i>Place Order
-                            </a>
-                            
-                            <!-- This button only shows on mobile so users don't have to scroll back up -->
-                            <a href="{% url 'consumer_dashboard' %}" class="btn btn-outline-secondary w-100 py-2 fw-medium rounded-pill d-lg-none">
-                                Continue Shopping
-                            </a>
+                <!-- Right Column: Payment Form -->
+                <div class="col-lg-7">
+                    <div class="card payment-card border-0 shadow-sm">
+                        <div class="payment-header">
+                            <i class="bi bi-phone fs-1 mb-2 d-block"></i>
+                            <h4 class="fw-bold mb-1">Pay with M-Pesa</h4>
+                            <p class="mb-0 opacity-75">Enter your phone number to receive an M-Pesa prompt.</p>
+                            <div class="amount-display">KES {{ total_price }}</div>
+                        </div>
+                        <div class="payment-body">
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold text-muted small text-uppercase" for="phone_number">M-Pesa Phone Number</label>
+                                    <div class="input-group input-group-lg">
+                                        <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                                        <input type="tel" name="phone_number" id="phone_number" placeholder="07XXXXXXXX" class="form-control" required>
+                                    </div>
+                                    <div class="form-text">We will send an STK push to this number shortly.</div>
+                                </div>
+
+                                <button type="submit" class="btn btn-pay w-100 rounded-pill fw-bold shadow-sm mb-3">
+                                    <i class="bi bi-lock-fill me-2"></i>Pay KES {{ total_price }}
+                                </button>
+                                
+                                <a href="#" class="btn btn-outline-secondary w-100 rounded-pill fw-medium py-2">
+                                    Cancel Payment
+                                </a>
+                            </form>
+
+                            <div class="trust-badges">
+                                <div><i class="bi bi-shield-check"></i> Secure Payment</div>
+                                <div><i class="bi bi-telephone-forward"></i> Instant STK Push</div>
+                                <div><i class="bi bi-lock-fill"></i> Encrypted</div>
+                            </div>
                         </div>
                     </div>
                 </div>

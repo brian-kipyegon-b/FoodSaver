@@ -123,15 +123,15 @@
                             </div>
                         </li>
                         <li class="nav-item mb-3">
-                            <div class="d-flex gap-1 align-items-center">
+                            <a href="{% url 'donor_orders' %}" class="d-flex gap-1 align-items-center">
                                 <div><img src="{% static 'svgs\order.svg' %}" width="24px" alt=""></div>
                                 <div>Orders</div>
-                            </div>
+                            </a>
                         </li>
                         <li class="nav-item mb-3">
                             <div class="d-flex gap-1 align-items-center">
                                 <div><img src="{% static 'svgs\profile (1).svg' %}" width="24px" alt=""></div>
-                                <div>Analytics</div>
+                                <div>Profile</div>
                             </div>
                         </li>
                         <li class="nav-item mb-3">
@@ -243,7 +243,8 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">{{ item.name }}</h5>
                                                 <p class="card-text text-muted">Expires: {{ item.expiry_date }}</p>
-                                                <p class="fw-bold text-success">KES {{ item.discounted_price }}</p>
+                                                <del class="fw-bold text-danger">KES {{ item.original_price }}</del>
+                                                <h5 class="fw-bold text-success">KES {{ item.discounted_price }}</h5>
                                             </div>
                                         </div>
                                     </div>

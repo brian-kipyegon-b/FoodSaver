@@ -22,12 +22,14 @@ class Order(models.Model):
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="customer_orders")  # customer
+    donor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="donor_orders")    # donor
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="pending")
 
     def __str__(self):
-        return f"Order #{self.id}"
+        return f"Order #{self.id} for donor {self.donor.username}"
+
 
 class Order_item(models.Model):
     order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
